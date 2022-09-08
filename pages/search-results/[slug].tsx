@@ -45,12 +45,13 @@ const Collection = (props) => {
   const [loading, setLoading] = useState(true);
   const [selectedTab, setSelectedTab] = useState<CategoryText | undefined>();
   const [pagination, setPagination] = useState(defaultPagination);
-  const [collection, setCollection] = useState<Object[]>([]);
-  const [collectionDetail, setCollectionDetail] = useState<Object>({});
+  // const [collection, setCollection] = useState<Object[]>([]);
+  // const [collectionDetail, setCollectionDetail] = useState<Object>({});
   const [listing, setListing] = useState<Object[]>([]);
 
   useEffect(() => {
     getData(slug);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pagination.page, slug, selectedTab]);
 
   const getData = async (search) => {

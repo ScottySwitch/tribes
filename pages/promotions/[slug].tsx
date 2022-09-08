@@ -41,7 +41,7 @@ import Head from "next/head";
 import { orderBy, trim } from "lodash";
 import { MicrositeLayouts } from "enums";
 
-const PromotionsPage = () => {
+const PromotionsPage = (props) => {
   const [showModalDealsDetails, setShowModalDealsDetails] = useState<boolean>();
   const [dealsDetails, setDealsDetails] = useState<IDealsDetails>(
     {} as IDealsDetails
@@ -74,76 +74,82 @@ const PromotionsPage = () => {
     [key: string]: any;
   }
   [];
-  const [bizListings, setBizListings] = useState<any>([]);
-  const [promotion, setPromotion] = useState<any>([]);
-  const [banners, setBanners] = useState<any>([]);
-  const [backgroundColor, setBackgroundColor] = useState([]);
+  const {
+    bizListings, promotion, banners, 
+    backgroundColor, orderLayout, layout, 
+    content, sliderBanner, articleArray, titleColor, 
+    metaTitle, metaDescription, products
+  } = props;
+  // const [bizListings, setBizListings] = useState<any>([]);
+  // const [promotion, setPromotion] = useState<any>([]);
+  // const [banners, setBanners] = useState<any>([]);
+  // const [backgroundColor, setBackgroundColor] = useState([]);
   const [backgroundColorBar, setBackgroundColorBar] = useState([]);
-  const [titleColor, setTitleColor] = useState([]);
+  // const [titleColor, setTitleColor] = useState([]);
   const [showAuthPopup, setShowAuthPopup] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [articleArray, setArticleArray] = useState<IType[]>([]);
-  const [metaTitle, setMetaTitle] = useState<string>("");
-  const [metaDescription, setMetaDescription] = useState<string>("");
-  const [products, setProducts] = useState<{ [key: string]: any }[]>([]);
+  // const [isLoading, setIsLoading] = useState(true);
+  // const [articleArray, setArticleArray] = useState<IType[]>([]);
+  // const [metaTitle, setMetaTitle] = useState<string>("");
+  // const [metaDescription, setMetaDescription] = useState<string>("");
+  // const [products, setProducts] = useState<{ [key: string]: any }[]>([]);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<any>({});
-  const [layout, setLayout] = useState("");
-  const [content, setContent] = useState("");
-  const [sliderBanner, setSliderBanner] = useState<string[]>([]);
-  const [orderLayout, setOrderLayout] = useState<string[]>([]);
-  const [listing, setListing] = useState<any>();
+  // const [layout, setLayout] = useState("");
+  // const [content, setContent] = useState("");
+  // const [sliderBanner, setSliderBanner] = useState<string[]>([]);
+  // const [orderLayout, setOrderLayout] = useState<string[]>([]);
+  // const [listing, setListing] = useState<any>();
 
-  useEffect(() => {
-    const getPromotionBySlug = async (slug) => {
-      const data = await PromotionApi.getPromotionBySlug(slug);
-      const promotionData = get(data, "data.data");
-      if (promotionData.length === 0) {
-        router.push("/");
-      }
-      const rawArticle = formatArticle(
-        get(promotionData, "[0].attributes.microsite_articles.articles.data")
-      );
-      const arrayImages = formatArrayImages(
-        get(promotionData, "[0].attributes.main_banner.data")
-      );
-      const arrayBanner = formatArrayImages(
-        get(promotionData, "[0].attributes.slider_banner.data")
-      );
-      let rawProducts = orderBy(
-        get(promotionData, "[0].attributes.products.data"),
-        ["is_pinned"],
-        ["desc"]
-      );
-      const formatProducts = formatListingItems(rawProducts);
-      const rawLayouts =
-        get(promotionData, "[0].attributes.order_section") &&
-        trim(get(promotionData, "[0].attributes.order_section")).split(",");
-      setOrderLayout(rawLayouts);
-      setLayout(get(promotionData, "[0].attributes.layout"));
-      setContent(get(promotionData, "[0].attributes.content_banner"));
-      setBanners(arrayImages);
-      setSliderBanner(arrayBanner);
-      setPromotion(get(promotionData, "[0].attributes"));
-      setIsLoading(false);
-      setBizListings(
-        get(promotionData, "[0].attributes.microsite_biz_listings")
-      );
-      setArticleArray(rawArticle);
-      setBackgroundColor(get(promotionData, "[0].attributes.background_color"));
-      setBackgroundColorBar(
-        get(promotionData, "[0].attributes.background_color_bar")
-      );
-      setTitleColor(get(promotionData, "[0].attributes.title_color"));
-      setMetaTitle(get(promotionData, "[0].attributes.meta_title"));
-      setMetaDescription(get(promotionData, "[0].attributes.meta_description"));
-      setProducts(formatProducts);
-    };
-    if (slug) {
-      getPromotionBySlug(slug).catch((e) => console.log(e));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [slug]);
+  // useEffect(() => {
+  //   const getPromotionBySlug = async (slug) => {
+  //     const data = await PromotionApi.getPromotionBySlug(slug);
+  //     const promotionData = get(data, "data.data");
+  //     if (promotionData.length === 0) {
+  //       router.push("/");
+  //     }
+  //     const rawArticle = formatArticle(
+  //       get(promotionData, "[0].attributes.microsite_articles.articles.data")
+  //     );
+  //     const arrayImages = formatArrayImages(
+  //       get(promotionData, "[0].attributes.main_banner.data")
+  //     );
+  //     const arrayBanner = formatArrayImages(
+  //       get(promotionData, "[0].attributes.slider_banner.data")
+  //     );
+  //     let rawProducts = orderBy(
+  //       get(promotionData, "[0].attributes.products.data"),
+  //       ["is_pinned"],
+  //       ["desc"]
+  //     );
+  //     const formatProducts = formatListingItems(rawProducts);
+  //     const rawLayouts =
+  //       get(promotionData, "[0].attributes.order_section") &&
+  //       trim(get(promotionData, "[0].attributes.order_section")).split(",");
+  //     setOrderLayout(rawLayouts);
+  //     setLayout(get(promotionData, "[0].attributes.layout"));
+  //     setContent(get(promotionData, "[0].attributes.content_banner"));
+  //     setBanners(arrayImages);
+  //     setSliderBanner(arrayBanner);
+  //     setPromotion(get(promotionData, "[0].attributes"));
+  //     setIsLoading(false);
+  //     setBizListings(
+  //       get(promotionData, "[0].attributes.microsite_biz_listings")
+  //     );
+  //     setArticleArray(rawArticle);
+  //     setBackgroundColor(get(promotionData, "[0].attributes.background_color"));
+  //     setBackgroundColorBar(
+  //       get(promotionData, "[0].attributes.background_color_bar")
+  //     );
+  //     setTitleColor(get(promotionData, "[0].attributes.title_color"));
+  //     setMetaTitle(get(promotionData, "[0].attributes.meta_title"));
+  //     setMetaDescription(get(promotionData, "[0].attributes.meta_description"));
+  //     setProducts(formatProducts);
+  //   };
+  //   if (slug) {
+  //     getPromotionBySlug(slug).catch((e) => console.log(e));
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [slug]);
 
   const checkLogin = () => {
     let userInfo = JSON.parse(localStorage.getItem("user") || "{}");
@@ -162,9 +168,9 @@ const PromotionsPage = () => {
   const sectionLayoutStyle: any = {
     backgroundColor: backgroundColor ? backgroundColor : "#fef1f2",
   };
-  if (isLoading) {
-    return <Loader />;
-  }
+  // if (isLoading) {
+  //   return <Loader />;
+  // }
 
   const SectionBizlistings = () =>
     isArray(bizListings) &&
@@ -481,7 +487,7 @@ const PromotionsPage = () => {
         const isVisibleListing =
           isArray(bizListings) &&
           bizListings.findIndex((item) => item.title === layout);
-        if (isVisibleListing) {
+        if (isVisibleListing && isVisibleListing !== -1) {
           layoutContent = (
             <SectionListing listing={bizListings[isVisibleListing]} />
           );
@@ -536,5 +542,53 @@ const PromotionsPage = () => {
     </div>
   );
 };
+
+export async function getServerSideProps(context: any){
+  const {slug} = context.query;
+
+  const data = await PromotionApi.getPromotionBySlug(slug);
+  
+  const promotionData = get(data, "data.data");
+  
+  if (promotionData.length === 0) {
+    // router.push("/");
+  }
+  const rawArticle = formatArticle(
+    get(promotionData, "[0].attributes.microsite_articles.articles.data")
+  );
+  const arrayImages = formatArrayImages(
+    get(promotionData, "[0].attributes.main_banner.data")
+  );
+  const arrayBanner = formatArrayImages(
+    get(promotionData, "[0].attributes.slider_banner.data")
+  );
+  let rawProducts = orderBy(
+    get(promotionData, "[0].attributes.products.data"),
+    ["is_pinned"],
+    ["desc"]
+  );
+  const formatProducts = formatListingItems(rawProducts);
+  const rawLayouts =
+    get(promotionData, "[0].attributes.order_section") &&
+    trim(get(promotionData, "[0].attributes.order_section")).split(",");
+  
+  return {
+    props: {
+      orderLayout: rawLayouts,
+      layout: get(promotionData, "[0].attributes.layout"),
+      content: get(promotionData, "[0].attributes.content_banner"),
+      banners: arrayImages,
+      sliderBanner: arrayBanner,
+      promotion: get(promotionData, "[0].attributes"),
+      bizListings: get(promotionData, "[0].attributes.microsite_biz_listings"),
+      articleArray: rawArticle,
+      backgroundColor: get(promotionData, "[0].attributes.background_color"),
+      titleColor: get(promotionData, "[0].attributes.title_color"),
+      metaTitle: get(promotionData, "[0].attributes.meta_title"),
+      metaDescription: get(promotionData, "[0].attributes.meta_descripion"),
+      products: formatProducts
+    }
+  }
+}
 
 export default PromotionsPage;
