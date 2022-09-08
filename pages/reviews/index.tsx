@@ -60,6 +60,7 @@ const ReviewsPage = () => {
     if (listingSearchResult.length === 0) {
       getRandomListing();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
