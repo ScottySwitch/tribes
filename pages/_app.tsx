@@ -28,8 +28,6 @@ export type ILoginInfor = {
   listing_follow_ids?: any;
 };
 
-// dw
-
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
   const pathname = router.pathname;
