@@ -523,8 +523,62 @@ export const contributePopOverList = [
   // { icon: "update-color", label: "Update listing", href: "/update-listing" },
 ];
 
-export const reportReasons = [
+export const levelList = [
   {
+      key: "level-1",
+      level: require("public/images/icon-level1.svg"),
+      point: "0 point",
+      color: "linear-gradient(111.42deg, #8289A7 -6.68%, #A4A8B7 104.88%)",
+  },
+  {   key: "level-2",
+      level: require("public/images/icon-level2.svg"),
+      point: "15 points",
+      color: "linear-gradient(111.42deg, #8289A7 -6.68%, #A4A8B7 104.88%)",
+  },
+  {   key: "level-3",
+      level: require("public/images/icon-level3.svg"),
+      point: "75 points",
+      color: "linear-gradient(90deg, #1DBF73 -40.59%, #B0D51B 157.43%)"
+  },
+  {   key: "level-4",
+      level: require("public/images/icon-level4.svg"),
+      point: "250 points",
+      color: "linear-gradient(90deg, #1DBF73 -40.59%, #B0D51B 157.43%)"
+  },
+  {   key: "level-5",
+      level: require("public/images/icon-level5.svg"),
+      point: "500 points",
+      color: "linear-gradient(157.54deg, #3FAEFF -6.82%, #5BEBFF 128.08%)"
+  },
+  {   key: "level-6",
+      level: require("public/images/icon-level6.svg"),
+      point: "1.500 points",
+      color: "linear-gradient(157.54deg, #3FAEFF -6.82%, #5BEBFF 128.08%)"
+  },
+  {   key: "level-7",
+      level: require("public/images/icon-level7.svg"),
+      point: "5000 points",
+      color: "linear-gradient(286.54deg, #F3D03E -36.76%, #F33E3E 153.21%)"
+  },
+  {   key: "level-8",
+      level: require("public/images/icon-level8.svg"),
+      point: "15.000 points",
+      color: "linear-gradient(286.54deg, #F3D03E -36.76%, #F33E3E 153.21%)"
+  },
+  {   key: "level-9",
+      level: require("public/images/icon-level9.svg"),
+      point: "50.000 points",
+      color: "linear-gradient(128.54deg, #E60112 -35.41%, #FF842B 148.52%)"
+  },
+  {   key: "level-10",
+      level: require("public/images/icon-level10.svg"),
+      point: "100.000 points",
+      color: "linear-gradient(149.74deg, #2BA6FF -2.74%, #943FFF 98.84%)"
+  }
+];
+
+export const reportReasons = [
+  { 
     label: "Offensive, hateful or sexually explicit",
     value: "Offensive, hateful or sexually explicit",
   },
