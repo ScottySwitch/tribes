@@ -31,11 +31,12 @@ const categoryTabList: any[] = categories.map((item) => ({
 }));
 const tabList: any[] = allTab.concat(categoryTabList);
 
-const Deals = () => {
-  const router = useRouter();
-  const { query } = router;
+const Deals = (props: any) => {
+  const { listings, total } = props;
 
-  const defaultPagination = { page: 1, total: 0, limit: 28 };
+  const router = useRouter();
+
+  const defaultPagination = { page: 1, total: 0 || total, limit: 28 };
 
   const [metaTitle, setMetaTitle] = useState(
     "Deals of the Day | Tribes by HHWT"
@@ -44,40 +45,13 @@ const Deals = () => {
     "Explore and discover deals from Muslim Friendly brands!"
   );
 
-  const [loading, setLoading] = useState(true);
   const [selectedTab, setSelectedTab] = useState<Categories>();
   const [pagination, setPagination] = useState(defaultPagination);
-  const [listingsHaveDeals, setListingsHaveDeals] = useState<{
-    [key: string]: any;
-  }>([]);
 
   useEffect(() => {
-    const getListingsHaveDeals = async () => {
-      const response = await bizListingApi.getListingCustom({
-        idCategory: selectedTab,
-        limit: 28,
-        hasDeals: true,
-        page: pagination.page,
-      });
-      const mappedData = formatBizlistingArray(get(response, "data.data"));
-      setPagination({
-        ...pagination,
-        total: get(response, "data.meta.pagination.total"),
-      });
-      setListingsHaveDeals(mappedData);
-      setLoading(false);
-    };
-
-    getListingsHaveDeals();
-  }, [pagination.page, selectedTab]);
-
-  if (loading) {
-    return (
-      <SectionLayout childrenClassName="flex justify-center">
-        <Loader />
-      </SectionLayout>
-    );
-  }
+    setPagination({ ...pagination, total: total || 0 });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [total, listings]);
 
   const handleHref = (item: any) => {
     const url = `/${getListingUrl(
@@ -129,14 +103,23 @@ const Deals = () => {
             type="secondary-no-outline"
             selectedTab={selectedTab}
             className="pt-[6px]"
-            onChangeTab={(e: Categories) => setSelectedTab(e)}
+            onChangeTab={(e: Categories) => {
+              setSelectedTab(e);
+              router.push(
+                {
+                  pathname: "/deals",
+                  query: { idCategory: e },
+                },
+                "deals"
+              );
+            }}
           />
         </div>
       </SectionLayout>
       <SectionLayout>
         <div className="flex flex-wrap justify-between sm:justify-start sm:gap-10">
-          {Array.isArray(listingsHaveDeals) &&
-            listingsHaveDeals.map((item) => (
+          {Array.isArray(listings) &&
+            listings.map((item) => (
               <div key={item?.title} className="sm:pb-5 m:pl-3 pt-3">
                 <InforCard
                   {...formatCardItemProps(item)}
@@ -149,15 +132,40 @@ const Deals = () => {
       </SectionLayout>
       <SectionLayout show={pagination.total > 1}>
         <Pagination
-          limit={30}
+          limit={28}
           total={pagination.total}
-          onPageChange={(selected) =>
-            setPagination({ ...pagination, page: selected.selected })
-          }
+          onPageChange={(selected) => {
+            setPagination({ ...pagination, page: selected.selected }),
+              router.push(
+                {
+                  pathname: "/deals",
+                  query: { page: selected.selected },
+                },
+                "deals"
+              );
+          }}
         />
       </SectionLayout>
     </div>
   );
 };
+
+export async function getServerSideProps(context) {
+  const { idCategory, page = 1 } = context.query;
+  const response = await bizListingApi.getListingCustom({
+    idCategory: idCategory,
+    limit: 28,
+    hasDeals: true,
+    page: page,
+  });
+  const mappedData = formatBizlistingArray(get(response, "data.data"));
+
+  return {
+    props: {
+      listings: mappedData,
+      total: get(response, "data.meta.pagination.total"),
+    },
+  };
+}
 
 export default Deals;

@@ -36,75 +36,9 @@ const categoryTabList: any[] = categories.map((item) => ({
 }));
 const tabList: any[] = allTab.concat(categoryTabList);
 
-const Collection = (props) => {
-  const { collectionSlug } = props;
+const Collection = (props: any) => {
+  const {listing, collectionDetail} = props;
   const router = useRouter();
-
-  const defaultPagination = { page: 1, total: 0, limit: 28 };
-
-  const [loading, setLoading] = useState(true);
-  const [selectedTab, setSelectedTab] = useState<CategoryText | undefined>();
-  const [pagination, setPagination] = useState(defaultPagination);
-  const [collection, setCollection] = useState<Object[]>([]);
-  const [collectionDetail, setCollectionDetail] = useState<Object>({});
-  const [listing, setListing] = useState<Object[]>([]);
-
-  useEffect(() => {
-    const getCollection = async () => {
-      const response = await CollectionApi.getAllCollectionByCollectionSlug(
-        collectionSlug
-      );
-      const listingsOfCollection = get(
-        response,
-        "data.data[0].attributes.biz_listings.data"
-      );
-      const banner = get(
-        response,
-        "data.data[0].attributes.banner.data.attributes.url"
-      );
-      const bannerMobile =
-        get(
-          response,
-          "data.data[0].attributes.banner_mobile.data.attributes.url"
-        ) || banner;
-      const collectionName = get(response, "data.data[0].attributes.name");
-      const description = get(response, "data.data[0].attributes.description");
-
-      const collectionDetailObject = {
-        collectionName,
-        description,
-        banner,
-        bannerMobile,
-      };
-      const mappedListings = isArray(listingsOfCollection)
-        ? formatBizlistingArray(listingsOfCollection)
-        : [];
-      setCollection(mappedListings);
-      setListing(mappedListings);
-      setLoading(false);
-      if (collectionName && description && banner) {
-        setCollectionDetail(collectionDetailObject);
-      }
-    };
-
-    getCollection();
-  }, [pagination, collectionSlug]);
-
-  useEffect(() => {
-    const arrayFilterListing = collection.filter(
-      (item) => changeToSlugify(get(item, "categories[0]")) === selectedTab
-    );
-    selectedTab ? setListing(arrayFilterListing) : setListing(collection);
-  }, [selectedTab]);
-
-  if (loading) {
-    return (
-      <SectionLayout childrenClassName="flex justify-center">
-        <Loader />
-      </SectionLayout>
-    );
-  }
-
   return (
     <div>
       <SectionLayout className="py-0 pb-3">
@@ -142,17 +76,6 @@ const Collection = (props) => {
           </h2>
         </div>
       </SectionLayout>
-      {/* <SectionLayout>
-        <div className="flex">
-          <TabsHorizontal
-            tablist={tabList}
-            type="secondary-no-outline"
-            selectedTab={selectedTab}
-            className="pt-[6px]"
-            onChangeTab={(e: CategoryText) => setSelectedTab(e)}
-          />
-        </div>
-      </SectionLayout> */}
       <SectionLayout>
         <div className="flex flex-wrap gap-3 md:gap-2 lg:gap-5">
           {Array.isArray(listing) &&
@@ -175,24 +98,53 @@ const Collection = (props) => {
         </div>
         <TopSearches />
       </SectionLayout>
-      <SectionLayout show={pagination.page > 1}>
-        <Pagination
-          limit={30}
-          total={pagination.total}
-          onPageChange={(selected) =>
-            setPagination({ ...pagination, page: selected.selected })
-          }
-        />
-      </SectionLayout>
-      {/* <Filter onClose={() => setShowFilter(false)} visible={showFilter} /> */}
     </div>
   );
 };
 
 export async function getServerSideProps(context) {
-  // Pass data to the page via props
   const { collectionSlug } = context.query;
-  return { props: { collectionSlug: collectionSlug } };
+  
+  const response = await CollectionApi.getAllCollectionByCollectionSlug(
+    collectionSlug
+  );
+  console.log(response);
+  const listingsOfCollection = get(
+    response,
+    "data.data[0].attributes.biz_listings.data"
+  );
+
+  const banner = get(
+    response,
+    "data.data[0].attributes.banner.data.attributes.url"
+  );
+  const bannerMobile =
+    get(
+      response,
+      "data.data[0].attributes.banner_mobile.data.attributes.url"
+    ) || banner;
+  const collectionName = get(response, "data.data[0].attributes.name");
+  const description = get(response, "data.data[0].attributes.description");
+
+  const collectionDetailObject = {
+    collectionName,
+    description,
+    banner,
+    bannerMobile,
+  };
+
+  const mappedListings = isArray(listingsOfCollection)
+        ? formatBizlistingArray(listingsOfCollection)
+        : [];
+
+  return { 
+    props: { 
+      listing: mappedListings,
+      collectionSlug: collectionSlug,
+      collectionDetail: collectionName && description && banner ? collectionDetailObject : {},
+      total: get(response, "data.data[0].attributes.biz_listings.data.length")
+    } 
+  };
 }
 
 export default Collection;
