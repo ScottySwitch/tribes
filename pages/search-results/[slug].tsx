@@ -96,6 +96,14 @@ const Collection = (props) => {
                   }
                 },`/search-results/${slug}`);
                 setSelectedTab(e);
+                setPagination({ ...pagination, page: 1 });
+                router.push({
+                  pathname: `/search-results/${slug}`,
+                  query: {
+                    page: 1, 
+                    limit: pagination.limit
+                  },
+                }, `/search-results/${slug}`)
               }
             }
           />

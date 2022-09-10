@@ -883,40 +883,9 @@ const ReportBizListing = ({
 };
 
 export async function getServerSideProps(context) {
-  const { categoryLink, listingSlug, referrer, locale } = context.query;
-  
-  let bizListing = {};
-  let metaTitle = "Tribes: Get travel information and recommendation for what to eat, buy, things to do, where to stay and how to get there";
-  let metaDescription = "Explore and discover Muslim Friendly eateries";
-  const element = document.querySelector("#renderTabs");
-
-  const listing = isViewPage
-  ? await BizListingApi.getInfoBizListingBySlug(listingSlug)
-      .then((res) => get(res, "data.data[0]"))
-      .catch((error) => {})
-  : await BizListingApi.getInfoOwnerBizListingBySlug(listingSlug)
-      .then((res) => {
-        get(res, "data.is_revision") && setIsRevision(true);
-        //they will be redirected to home if do not own the listing
-        !get(res, "data.is_owner") && (window.location.href = "/");
-        return get(res, "data.data[0]");
-      })
-      .catch((error) => {});
-
-  if (element && referrer === "deals") {
-    element.scrollIntoView({
-      behavior: "smooth",
-      block: "center",
-    });
-  }
-
-
+  // Pass data to the page via props
   return {
-    props: {
-      categoryLink: categoryLink,
-      listingSlug: listingSlug,
-      referrer: referrer
-    },
+    props: {},
   };
 }
 
