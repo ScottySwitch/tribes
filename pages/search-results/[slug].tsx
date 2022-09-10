@@ -37,51 +37,34 @@ const categoryTabList: any[] = categories.map((item) => ({
 const tabList: any[] = allTab.concat(categoryTabList);
 
 const Collection = (props) => {
-  const { slug } = props;
+  const { slug, total, listing } = props;
   const router = useRouter();
 
-  const defaultPagination = { page: 1, total: 0, limit: 28 };
-
-  const [loading, setLoading] = useState(true);
+  const defaultPagination = { page: 1, total: 0, limit: 28};
   const [selectedTab, setSelectedTab] = useState<CategoryText | undefined>();
   const [pagination, setPagination] = useState(defaultPagination);
   const [collection, setCollection] = useState<Object[]>([]);
   const [collectionDetail, setCollectionDetail] = useState<Object>({});
-  const [listing, setListing] = useState<Object[]>([]);
 
   useEffect(() => {
-    getData(slug);
+    getData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pagination.page, slug, selectedTab]);
 
-  const getData = async (search) => {
-    setLoading(true);
-    let params: any = {
-      search: changeToSlugify(search),
-      page: pagination.page,
-      limit: pagination.limit,
-    };
-    if (selectedTab) {
-      params.categories = selectedTab;
-    }
-    const data = await BizlistingApi.getListingCustom(params);
-    if (data) {
-      const rawListing = formatBizlistingArray(get(data, "data.data"));
-      setListing(rawListing);
-      setLoading(false);
-      setPagination({
-        ...pagination,
-        total: get(data, "data.meta.pagination.total"),
-      });
-    }
+  const getData = async () => {
+    setPagination({
+      ...pagination,
+      total: total,
+    });
+    router.push({
+      pathname: `/search-results/${slug}`,
+      query: {
+        page: pagination.page, 
+        limit: pagination.limit,
+        selectedTab: selectedTab
+      },
+    }, `/search-results/${slug}`)
   };
-
-  if (loading) {
-    return (
-      <SectionLayout childrenClassName="flex justify-center">
-        <Loader />
-      </SectionLayout>
-    );
-  }
 
   return (
     <div>
@@ -105,7 +88,16 @@ const Collection = (props) => {
             type="secondary-no-outline"
             selectedTab={selectedTab}
             className="pt-[6px]"
-            onChangeTab={(e: CategoryText) => setSelectedTab(e)}
+            onChangeTab={(e: CategoryText) => {
+                router.push({
+                  pathname: `/search-results/${slug}`,
+                  query: {
+                    selectedTab: e
+                  }
+                },`/search-results/${slug}`);
+                setSelectedTab(e);
+              }
+            }
           />
         </div>
       </SectionLayout>
@@ -137,8 +129,16 @@ const Collection = (props) => {
           currentPage={pagination.page}
           key={pagination.page}
           total={pagination.total}
-          onPageChange={(selected) =>
-            setPagination({ ...pagination, page: selected.selected })
+          onPageChange={(selected) => {
+              setPagination({ ...pagination, page: selected.selected });
+              router.push({
+                pathname: `/search-results/${slug}`,
+                query: {
+                  page: selected.selected, 
+                  limit: pagination.limit
+                },
+              }, `/search-results/${slug}`)
+            }
           }
         />
       </SectionLayout>
@@ -148,9 +148,29 @@ const Collection = (props) => {
 };
 
 export async function getServerSideProps(context) {
-  // Pass data to the page via props
-  const { slug } = context.query;
-  return { props: { slug: slug } };
+  const { slug, selectedTab, page, limit } = context.query;
+  let listing:Object[] = [];
+  let params: any = {
+    search: changeToSlugify(slug),
+    page: page,
+    limit: limit,
+  };
+  if (selectedTab) {
+    params.categories = selectedTab;
+  }
+  const data = await BizlistingApi.getListingCustom(params);
+  if (data) {
+    const rawListing = formatBizlistingArray(get(data, "data.data"));
+    listing = rawListing;
+  }
+
+  return { 
+    props: { 
+      slug: slug,
+      listing: listing,
+      total: get(data, "data.meta.pagination.total")
+    } 
+  };
 }
 
 export default Collection;
