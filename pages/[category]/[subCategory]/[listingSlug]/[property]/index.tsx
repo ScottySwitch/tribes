@@ -57,21 +57,14 @@ const PropertiesContainer = ({
 };
 
 const Properties = (context) => {
-  const { category, subCategory, listingSlug, property } = context;
+  const { category, subCategory, listingSlug, property, listingInformation, phoneNumber, isPaid, isEatListing, isVerified } = context;
   const router = useRouter();
-
   const { user, updateUser } = useContext(UserInforContext);
-
   const upperCaseTitle = property?.[0].toUpperCase() + property?.slice(1);
   const [loading, setLoading] = useState(true);
   const [selectedItem, setSelectedItem] = useState<any>({});
   const [showDetailModal, setShowDetailModal] = useState(false);
-  const [listingInformation, setListingInformation] = useState<any>({});
   const [userInfo, setUserInfo] = useState<any>({});
-  const [phoneNumber, setPhoneNumber] = useState<any>("");
-  const [isPaid, setIsPaid] = useState<boolean>(false);
-  const [isEatListing, setIsEatListing] = useState<boolean>(false);
-  const [isVerified, setIsVerified] = useState<boolean>(false);
   const [selectedTab, setSelectedTab] = useState<string>(ListingTabs.PRODUCT);
 
   const TabList: any[] = [
@@ -90,38 +83,16 @@ const Properties = (context) => {
   ];
 
   useEffect(() => {
-    const getProperties = async () => {
-      setLoading(true);
-      let data = await BizListingApi.getInfoBizListingBySlug(listingSlug);
+    setLoading(true);
+    let userInfo = JSON.parse(localStorage.getItem("user") || "{}");
+    setUserInfo(userInfo);
 
-      let userInfo = JSON.parse(localStorage.getItem("user") || "{}");
-      const listingDetail = get(data, `data.data[0]`) || {};
-
-      if (get(listingDetail, "categories[0].slug") === CategoryText.EAT) {
-        setIsEatListing(true);
-      }
-      const rawPhoneNumber = listingDetail.phone_number;
-      const defaultPhone = censoredPhoneNumber(rawPhoneNumber);
-      if (isPaidUser(listingDetail.expiration_date)) {
-        setIsPaid(isPaidUser(listingDetail.expiration_date));
-        setPhoneNumber(rawPhoneNumber);
-      } else {
-        setPhoneNumber(defaultPhone);
-      }
-      setIsVerified(listingDetail.is_verified);
-      setUserInfo(userInfo);
-      if (property === "menus") {
-        setSelectedTab("menus");
-      } else if (property === "deals") {
-        setSelectedTab("deals");
-      }
-
-      setListingInformation(listingDetail);
-
-      setLoading(false);
-    };
-
-    getProperties();
+    if (property === "menus") {
+      setSelectedTab("menus");
+    } else if (property === "deals") {
+      setSelectedTab("deals");
+    }
+    setLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [listingSlug]);
 
@@ -240,13 +211,40 @@ const Properties = (context) => {
 };
 
 export async function getServerSideProps(props) {
+  const { category, subCategory, listingSlug, property } = props.query;
+  let isPaid = false;
+  let isEatListing = false, phoneNumber = "";
+
+  let data = await BizListingApi.getInfoBizListingBySlug(listingSlug);    
+  const listingDetail = get(data, `data.data[0]`) || {};
+
+  if (get(listingDetail, "categories[0].slug") === CategoryText.EAT) {
+    isEatListing = true;
+  }
+  const rawPhoneNumber = listingDetail.phone_number;
+  const defaultPhone = censoredPhoneNumber(rawPhoneNumber);
+  if (isPaidUser(listingDetail.expiration_date)) {
+    isPaid = isPaidUser(listingDetail.expiration_date);
+    phoneNumber = rawPhoneNumber;
+  } else {
+    phoneNumber = defaultPhone;
+  }
+  const isVerified = listingDetail.is_verified;
+
+  const listingInformation = listingDetail;
+
   // Pass data to the page via props
   return {
     props: {
-      category: props.query.category || "",
-      subCategory: props.query.subCategory || "",
-      listingSlug: props.query.listingSlug || "",
-      property: props.query.property || "",
+      category: category || "",
+      subCategory: subCategory || "",
+      listingSlug: listingSlug || "",
+      property: property || "",
+      isEatListing: isEatListing,
+      isPaid: isPaid,
+      phoneNumber: phoneNumber,
+      isVerified: isVerified,
+      listingInformation: listingInformation
     },
   };
 }

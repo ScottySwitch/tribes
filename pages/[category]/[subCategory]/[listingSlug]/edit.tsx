@@ -883,9 +883,69 @@ const ReportBizListing = ({
 };
 
 export async function getServerSideProps(context) {
-  // Pass data to the page via props
+  const { categoryLink, listingSlug, referrer, locale } = context.query;
+  
+  let bizListing = {};
+  let metaTitle = "Tribes: Get travel information and recommendation for what to eat, buy, things to do, where to stay and how to get there";
+  let metaDescription = "Explore and discover Muslim Friendly eateries";
+  const element = document.querySelector("#renderTabs");
+  if (element && referrer === "deals") {
+    element.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+  }
+
+  switch (get(bizListing, "categories[0].slug")) {
+    case CategoryText.EAT:
+      switch (locale) {
+        case "sg":
+          metaTitle = `${bizListing.name} | Tribes by HHWT`;
+          break;
+        case "id":
+          setMetaTitle(
+            `Lihat ${bizListing.name} Halal dan cek ${bizListing.name} Menu Online | Tribes`
+          );
+          break;
+        default:
+          setMetaTitle(`${bizListing.name} | Tribes by HHWT`);
+          break;
+      }
+      setMetaDescription(
+        "Enjoy limited-time exclusive offers. Find out more today!"
+      );
+      break;
+    case CategoryText.BUY:
+      setMetaTitle(`${bizListing.name} | Tribes by HHWT`);
+      setMetaDescription(
+        "Enjoy limited-time exclusive offers. Find out more today!"
+      );
+      break;
+    case CategoryText.TRANSPORT:
+      setMetaTitle(`${bizListing.name} | Tribes by HHWT`);
+      setMetaDescription(
+        "Explore and discover flights, ferries, buses and other modes of transport!"
+      );
+      break;
+    case CategoryText.STAY:
+      setMetaTitle(`${bizListing.name} | Tribes by HHWT`);
+      setMetaDescription("Explore and discover the best places to stay!");
+      break;
+    case CategoryText.SEE_AND_DO:
+      setMetaTitle(`${bizListing.name} | Tribes by HHWT`);
+      setMetaDescription(
+        "Explore and discover exciting activities and sight-seeing spots!"
+      );
+      break;
+  }
+
+
   return {
-    props: {},
+    props: {
+      categoryLink: categoryLink,
+      listingSlug: listingSlug,
+      referrer: referrer
+    },
   };
 }
 
