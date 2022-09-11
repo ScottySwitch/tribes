@@ -211,7 +211,38 @@ const BizInformation = (props) => {
 };
 export const getServerSideProps = async (context) => {
   const { listingSlug, information } = context.query;
-  return { props: { listingSlug: listingSlug, information: information } };
+
+  const data = await BizListingApi.getInfoOwnerBizListingBySlug(
+    listingSlug
+  );
+
+  // //TODO: Check listing is owned by user before returning biz listing data on BE
+  const listing = get(data, "data.data[0]") || {};
+  // updateUser({
+  //   now_biz_listing: listing,
+  // });
+  // if (listing?.expiration_date) {
+  //   setIsPaid(isPaidUser(listing.expiration_date));
+  // } else {
+  //   setIsPaid(false);
+  // }
+  // // setIsPaid(isPaidListing);
+  // setListing(listing);
+  // setLoading(false);
+  // setIsRevision(get(data, "data.is_revision"));
+  // const isOwned = get(data, "data.is_owner");
+
+  // if (isOwned === false) {
+  //   router.push("/");
+  // }
+
+  return { 
+    props: { 
+      listingSlug: listingSlug, 
+      information: information,
+      isPaid: listing?.expiration_date ? isPaidUser(listing.expiration_date) : false,
+    }  
+  };
 };
 
 export default BizInformation;
