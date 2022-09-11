@@ -23,6 +23,10 @@
         margin-bottom: 30px;
       }
 
+      .level {
+        margin-bottom: 30px;
+        margin-left: 15px;
+      }
       .avatar {
         min-width: 220px;
         max-width: 220px;
@@ -175,6 +179,8 @@
         }
       }
       &_two {
+        align-items: flex-start;
+        flex-direction: column;
         margin-bottom: 20px;
 
         .outstanding_criteria {
@@ -187,6 +193,9 @@
           span {
             font-size: $text-sm;
           }
+        }
+        .btn_edit_profile {
+          margin-top: 15px;
         }
       }
     }

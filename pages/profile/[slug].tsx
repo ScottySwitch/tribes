@@ -1,7 +1,9 @@
 import Button from "components/Button/Button";
 import SectionLayout from "components/SectionLayout/SectionLayout";
+import PopupPoint from "components/PopupPoint/PopupPoint";
 import TabsHorizontal, { ITab } from "components/TabsHorizontal/TabsHorizontal";
 import TopSearches from "components/TopSearches/TopSearches";
+import Modal from "components/Modal/Modal";
 import CompleteProfileCard from "components/UserProfilePage/CompleteProfileCard/CompleteProfileCard";
 import CoverImage from "components/UserProfilePage/CoverImage/CoverImage";
 import PanelAbout from "components/UserProfilePage/PanelAbout/PanelAbout";
@@ -9,6 +11,8 @@ import { UserInforContext } from "Context/UserInforContext";
 import ContributedPanel from "components/UserProfilePage/PanelContributed/PanelContributed";
 import FavouriedPanel from "components/UserProfilePage/PanelFavouried/PanelFavouried";
 import SavedDealsPanel from "components/UserProfilePage/PanelSavedDeals/PanelSavedDeals";
+import Popover from "components/Popover/Popover";
+import Icon from "components/Icon/Icon";
 import {
   dummySavedDeals,
   user,
@@ -24,7 +28,13 @@ import styles from "styles/Profile.module.scss";
 import ContributeApi from "services/contribute";
 import Header from "components/TheHeader/Header";
 import Head from "next/head";
+import PopupLevel from "components/PopupLevel/PopupLevel";
 import ProgressUserModal from "components/ProgressUserModal/ProgressUserModal";
+
+
+const content = (
+  <PopupLevel></PopupLevel>
+);
 
 const GroupHeadingOne = (props: {
   name: string;
@@ -46,6 +56,11 @@ const GroupHeadingOne = (props: {
           />
         </div>
         <h2 className={styles.name}>{name}</h2>
+        <div className={styles.level}>
+          <Popover content={content}>
+            <Icon icon="icon-level11" size={43}/>
+          </Popover>
+        </div>
       </div>
       <CompleteProfileCard
         icon="like-color-2"
@@ -72,7 +87,9 @@ const GroupHeadingTwo = (props: {
     };
     getData();
   }, []);
-
+  const content = (
+    <PopupPoint></PopupPoint>
+  )
   return (
     <React.Fragment>
       <div className={styles.group_heading_two}>
@@ -85,6 +102,12 @@ const GroupHeadingTwo = (props: {
             <h5>Following</h5>
             <span>{numberFollow}</span>
           </div>
+          <Popover content={content}>
+            <div className={styles.outstanding_criteria}>
+              <h5>Points</h5>
+              <span>{numberFollow}</span>
+            </div>
+          </Popover>
         </div>
         <Button
           className={styles.btn_edit_profile}
