@@ -179,6 +179,8 @@
         }
       }
       &_two {
+        align-items: flex-start;
+        flex-direction: column;
         margin-bottom: 20px;
 
         .outstanding_criteria {
@@ -191,6 +193,9 @@
           span {
             font-size: $text-sm;
           }
+        }
+        .btn_edit_profile {
+          margin-top: 15px;
         }
       }
     }
