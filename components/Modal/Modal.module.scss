@@ -17,7 +17,7 @@
   &.show {
     overflow: auto;
     height: 101vh;
-    z-index: 4;
+    z-index: 5;
 
     .container {
       max-height: calc(100vh - 100px);
@@ -125,7 +125,7 @@
     }
     .container {
       border-radius: $border-radius $border-radius 0 0;
-      margin-bottom: 60px;
+      padding-bottom: 60px;
     }
   }
 
