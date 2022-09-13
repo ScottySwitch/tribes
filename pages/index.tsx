@@ -77,7 +77,7 @@ const Home = (props: any) => {
         <meta name="description" content={metaDescription} />
       </Head>
       {isArray(listBanners) && (
-        <SectionLayout>
+        <SectionLayout className={styles.home_banner}>
           <Carousel responsive={homeBannerResponsive}>
             {listBanners.map((img, index) => (
               <div
@@ -101,7 +101,7 @@ const Home = (props: any) => {
         </SectionLayout>
       )}
       {isArray(listCategories) && (
-        <SectionLayout title="Explore BESTS" childrenClassName={styles.bests}>
+        <SectionLayout title="Explore BESTS" className={styles.bests_list} childrenClassName={styles.bests}>
           {listCategories.map((item, index) => (
             <div
               key={item.slug}

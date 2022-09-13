@@ -52,163 +52,12 @@ const Category = (props: any) => {
   } = router;
   const defaultPagination = { page: 1, total: 0, limit: 28 };
 
-  const [metaTitle, setMetaTitle] = useState(
-    "Tribes: Get travel information and recommendation for what to eat, buy, things to do, where to stay and how to get there"
-  );
-  const [metaDescription, setMetaDescription] = useState(
-    "Explore and discover Muslim Friendly eateries"
-  );
-  const [loading, setLoading] = useState(true);
+  const { metaTitle, metaDescription, categoryInfor, bannerArray, collectionArray, articleArray, dealArray, categoryLinkArray } = props;
+
   const [pagination, setPagination] = useState(defaultPagination);
-  const [categoryInfor, setCategoryInfor] = useState<Ilisting>({});
   const [listingArray, setListingArray] = useState<IType[]>([]);
-  const [bannerArray, setBannergArray] = useState<IType[]>([]);
-  const [collectionArray, setCollectionArray] = useState<IType>([]);
-  const [articleArray, setArticleArray] = useState<IType[]>([]);
-  const [dealArray, setDealArray] = useState<IType[]>([]);
-  const [categoryLinkArray, setCategoryLinkArray] = useState<IType[]>([]);
   const { user } = useContext(UserInforContext);
   const { location } = user;
-
-  useEffect(() => {
-    switch (category) {
-      case CategoryText.EAT:
-        switch (locale) {
-          case "id":
-            setMetaTitle(
-              "Cari Restoran Halal di Singapura dan Pesan Makanan Online | Tribes"
-            );
-            break;
-          default:
-            setMetaTitle(
-              "Find Halal Restaurant in Singapore and Order Food Online | Tribes"
-            );
-            break;
-        }
-        break;
-      case CategoryText.BUY:
-        setMetaTitle("Browse Products | Tribes by HHWT");
-        setMetaDescription("Explore and discover Muslim Friendly products");
-        break;
-      case CategoryText.TRANSPORT:
-        setMetaTitle(
-          "Browse the Different Modes of Transport | Tribes by HHWT"
-        );
-        setMetaDescription(
-          "Explore and discover flights, ferries, buses and other modes of transport!"
-        );
-        break;
-      case CategoryText.STAY:
-        setMetaTitle("Browse Places to Stay | Tribes by HHWT");
-        setMetaDescription("Explore and discover the best places to stay!");
-        break;
-      case CategoryText.SEE_AND_DO:
-        setMetaTitle("Browse Activities & Sight-seeing spots | Tribes by HHWT");
-        setMetaDescription(
-          "Explore and discover exciting activities and sight-seeing spots!"
-        );
-        break;
-    }
-  }, [locale, category]);
-
-  useEffect(() => {
-    const getData = async (categoryId) => {
-      const dataExclusiveDeal = await BizListingApi.getListingCustom({
-        categories: categoryId,
-        isExclusive: true,
-        limit: 12,
-        page: 1,
-      });
-      const rawListingExclusiveDealAray = formatBizlistingArray(
-        get(dataExclusiveDeal, "data.data")
-      );
-      setDealArray(rawListingExclusiveDealAray);
-
-      const dataBanners = await BannerApi.getBannerCustom({
-        categories: categoryId,
-        limit: 12,
-        page: 1,
-      });
-      const rawListBanners = formatBanner(get(dataBanners, "data.data"));
-      setBannergArray(rawListBanners);
-
-      const dataCollections = await CollectionApi.getCollectionCustom({
-        categories: category,
-        page: 1,
-        limit: 12,
-      });
-      const rawListCollections = formatCollections(
-        get(dataCollections, "data.data")
-      );
-      setCollectionArray(rawListCollections);
-
-      const dataCategoryLinks =
-        await CategoryLinkApi.getCategoryLinksByCategorySlug(category);
-      const rawListCategoryLink = formatCategoryLink(
-        get(dataCategoryLinks, "data.data")
-      );
-      setCategoryLinkArray(rawListCategoryLink);
-
-      const dataArticles = await ArticleApi.getArticleCustomer({
-        categories: category,
-        page: 1,
-        limit: 16,
-      });
-      const rawArticle = formatArticle(get(dataArticles, "data.data"));
-      setArticleArray(rawArticle);
-      // setLoading(false)
-    };
-
-    let defaultCategoryInfor = {};
-    switch (category) {
-      case CategoryText.BUY:
-        defaultCategoryInfor = {
-          bannerSrc: "/images/banner-buy.jpg",
-          bannerMobileSrc: "/images/buy-banner-mobile.jpg",
-          categoryName: "Buy",
-          categoryDescription: "Explore a range of items.",
-        };
-        break;
-      case CategoryText.EAT:
-        defaultCategoryInfor = {
-          bannerSrc: "/images/eat-banner.jpg",
-          bannerMobileSrc: "/images/eat-banner-mobile.jpg",
-          categoryName: "Eat",
-          categoryDescription:
-            "Explore a wide array of cuisine types across different cultures.",
-        };
-        break;
-      case CategoryText.SEE_AND_DO:
-        defaultCategoryInfor = {
-          bannerSrc: "/images/see-and-do-banner.jpg",
-          bannerMobileSrc: "/images/see-and-do-banner-mobile.jpg",
-          categoryName: "See and Do",
-          categoryDescription:
-            "Explore a wide array of cuisine types across different cultures.",
-        };
-        break;
-      case CategoryText.STAY:
-        defaultCategoryInfor = {
-          bannerSrc: "/images/stay-banner.jpg",
-          bannerMobileSrc: "/images/stay-banner-mobile.jpg",
-          categoryName: "Stay",
-          categoryDescription:
-            "Explore famous attractions, key landmarks and experience localized activities. ",
-        };
-        break;
-      case CategoryText.TRANSPORT:
-        defaultCategoryInfor = {
-          bannerSrc: "/images/transport-banner.jpg",
-          bannerMobileSrc: "/images/transport-banner-mobile.jpg",
-          categoryName: "Transport",
-          categoryDescription: "Find the best way to get around.",
-        };
-        break;
-    }
-    setCategoryInfor(defaultCategoryInfor);
-    getData(category);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [category]);
 
   useEffect(() => {
     const getDataListing = async (categoryId, page) => {
@@ -228,6 +77,7 @@ const Category = (props: any) => {
       });
     };
     location && getDataListing(category, pagination.page);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pagination.page, category, location]);
 
   const handleSelectSubCategory = (slug) =>
@@ -419,5 +269,151 @@ const Category = (props: any) => {
     </div>
   );
 };
+
+export async function getServerSideProps(context :any){
+  const { category, locale } = context.query;
+  var metaTitle = "Tribes: Get travel information and recommendation for what to eat, buy, things to do, where to stay and how to get there";
+  var metaDescription = "Explore and discover Muslim Friendly eateries";
+  var dealArray: IType[] = [], 
+      bannerArray:IType[] = [], 
+      collectionArray:IType = [],
+      categoryLinkArray:IType[] = [],
+      articleArray:IType[] = [],
+      categoryInfor:Ilisting = {};
+
+  switch (category) {
+    case CategoryText.EAT:
+      switch (locale) {
+        case "id":
+          metaTitle = "Cari Restoran Halal di Singapura dan Pesan Makanan Online | Tribes"
+          break;
+        default:
+          metaTitle = "Find Halal Restaurant in Singapore and Order Food Online | Tribes"
+          break;
+      }
+      break;
+    case CategoryText.BUY:
+      metaTitle = "Browse Products | Tribes by HHWT";
+      metaDescription ="Explore and discover Muslim Friendly products";
+      break;
+    case CategoryText.TRANSPORT:
+      metaTitle = "Browse the Different Modes of Transport | Tribes by HHWT"
+      metaDescription = "Explore and discover flights, ferries, buses and other modes of transport!"
+      break;
+    case CategoryText.STAY:
+      metaTitle = "Browse Places to Stay | Tribes by HHWT";
+      metaDescription = "Explore and discover the best places to stay!";
+      break;
+    case CategoryText.SEE_AND_DO:
+      metaTitle = "Browse Activities & Sight-seeing spots | Tribes by HHWT";
+      metaDescription = "Explore and discover exciting activities and sight-seeing spots!"
+      break;
+  }
+
+  const dataExclusiveDeal = await BizListingApi.getListingCustom({
+    categories: category,
+    isExclusive: true,
+    limit: 12,
+    page: 1,
+  });
+  const rawListingExclusiveDealArray = formatBizlistingArray(
+    get(dataExclusiveDeal, "data.data")
+  );
+  dealArray = rawListingExclusiveDealArray;
+
+  const dataBanners = await BannerApi.getBannerCustom({
+    categories: category,
+    limit: 12,
+    page: 1,
+  });
+  const rawListBanners = formatBanner(get(dataBanners, "data.data"));
+  bannerArray = rawListBanners;
+
+  const dataCollections = await CollectionApi.getCollectionCustom({
+    categories: category,
+    page: 1,
+    limit: 12,
+  });
+  const rawListCollections = formatCollections(
+    get(dataCollections, "data.data")
+  );
+  collectionArray = rawListCollections;
+
+  const dataCategoryLinks =
+    await CategoryLinkApi.getCategoryLinksByCategorySlug(category);
+  const rawListCategoryLink = formatCategoryLink(
+    get(dataCategoryLinks, "data.data")
+  );
+  categoryLinkArray = rawListCategoryLink;
+
+  const dataArticles = await ArticleApi.getArticleCustomer({
+    categories: category,
+    page: 1,
+    limit: 16,
+  });
+  const rawArticle = formatArticle(get(dataArticles, "data.data"));
+  articleArray = rawArticle;
+
+  let defaultCategoryInfor = {};
+  switch (category) {
+    case CategoryText.BUY:
+      defaultCategoryInfor = {
+        bannerSrc: "/images/banner-buy.jpg",
+        bannerMobileSrc: "/images/buy-banner-mobile.jpg",
+        categoryName: "Buy",
+        categoryDescription: "Explore a range of items.",
+      };
+      break;
+    case CategoryText.EAT:
+      defaultCategoryInfor = {
+        bannerSrc: "/images/eat-banner.jpg",
+        bannerMobileSrc: "/images/eat-banner-mobile.jpg",
+        categoryName: "Eat",
+        categoryDescription:
+          "Explore a wide array of cuisine types across different cultures.",
+      };
+      break;
+    case CategoryText.SEE_AND_DO:
+      defaultCategoryInfor = {
+        bannerSrc: "/images/see-and-do-banner.jpg",
+        bannerMobileSrc: "/images/see-and-do-banner-mobile.jpg",
+        categoryName: "See and Do",
+        categoryDescription:
+          "Explore a wide array of cuisine types across different cultures.",
+      };
+      break;
+    case CategoryText.STAY:
+      defaultCategoryInfor = {
+        bannerSrc: "/images/stay-banner.jpg",
+        bannerMobileSrc: "/images/stay-banner-mobile.jpg",
+        categoryName: "Stay",
+        categoryDescription:
+          "Explore famous attractions, key landmarks and experience localized activities. ",
+      };
+      break;
+    case CategoryText.TRANSPORT:
+      defaultCategoryInfor = {
+        bannerSrc: "/images/transport-banner.jpg",
+        bannerMobileSrc: "/images/transport-banner-mobile.jpg",
+        categoryName: "Transport",
+        categoryDescription: "Find the best way to get around.",
+      };
+      break;
+  }
+  categoryInfor = defaultCategoryInfor;
+
+  return {
+    props: {
+      metaTitle: metaTitle,
+      metaDescription: metaDescription,
+      dealArray: dealArray,
+      bannerArray: bannerArray,
+      collectionArray: collectionArray,
+      categoryLinkArray: categoryLinkArray,
+      articleArray: articleArray,
+      categoryInfor: categoryInfor
+    }
+  }
+}
 
 export default Category;
