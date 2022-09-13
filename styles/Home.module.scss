@@ -417,6 +417,22 @@
   .for_you_container {
     gap: 10px;
   }
+
+  .sub_category {
+    gap: unset;
+    width: 100px;
+    .sub_category {
+      &_icon {
+        width: 40px;
+        height: 40px;
+      }
+
+      &_label {
+        font-weight: $font-light;
+        font-size: $text-sm;
+      }
+    }
+  }
 }
 
 @media screen and (max-width: $small-mobile) {
